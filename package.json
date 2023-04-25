@@ -1,0 +1,29 @@
+{
+  "name": "my-vue-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tweenjs/tween.js": "^19.0.0",
+    "cannon": "^0.6.2",
+    "cannon-es": "^0.20.0",
+    "cannon-es-debugger": "^1.0.0",
+    "dat.gui": "^0.7.9",
+    "gsap": "^3.11.5",
+    "lodash": "^4.17.21",
+    "nipplejs": "^0.10.1",
+    "socket.io-client": "^4.6.1",
+    "three": "^0.151.3",
+    "three-to-cannon": "^4.3.0",
+    "vue": "^3.2.47"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.1.0",
+    "vite": "^4.2.0"
+  }
+}
