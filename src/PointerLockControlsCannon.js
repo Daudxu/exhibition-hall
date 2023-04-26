@@ -1,5 +1,5 @@
-import * as THREE from 'https://unpkg.com/three@0.122.0/build/three.module.js'
-import * as CANNON from '../../dist/cannon-es.js'
+import * as THREE from 'three'
+import * as CANNON from 'cannon-es'
 
 /**
  * @author mrdoob / http://mrdoob.com/
@@ -202,6 +202,7 @@ class PointerLockControlsCannon extends THREE.EventDispatcher {
     if (this.moveForward) {
       this.inputVelocity.z = -this.velocityFactor * delta
     }
+
     if (this.moveBackward) {
       this.inputVelocity.z = this.velocityFactor * delta
     }
@@ -209,6 +210,7 @@ class PointerLockControlsCannon extends THREE.EventDispatcher {
     if (this.moveLeft) {
       this.inputVelocity.x = -this.velocityFactor * delta
     }
+
     if (this.moveRight) {
       this.inputVelocity.x = this.velocityFactor * delta
     }

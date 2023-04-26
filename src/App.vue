@@ -3,9 +3,11 @@ import * as THREE from 'three'
 import  Stats  from "three/examples/jsm/libs/stats.module"
 import  { Octree }  from "three/examples/jsm/math/Octree.js"
 import { Capsule } from "three/examples/jsm/math/Capsule.js"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import * as CANNON from "cannon-es"
 import { onMounted, reactive } from 'vue'
+import CannonDebugger from 'cannon-es-debugger'
+import { PointerLockControlsCannon } from './PointerLockControlsCannon'
 
 onMounted (()=>{
     // 默认场景
@@ -24,8 +26,8 @@ onMounted (()=>{
       0.001,
       1000
     )
-    camera.position.set(0, 5, 10)
-
+    camera.position.set(0, 2, 4)
+    camera.lookAt(0, 0, -2)
     // 渲染器
     const container = document.getElementById("container");
     const renderer = new THREE.WebGL1Renderer({ antialias: true })
@@ -44,22 +46,13 @@ onMounted (()=>{
     container.appendChild(stats.domElement);
 
     // 轨道控制器
-    const controls = new OrbitControls(camera, renderer.domElement);
+    // const controls = new OrbitControls(camera, renderer.domElement);
     // controls.target.set(0, 0, 0);
     
-
-    const clock = new THREE.Clock();
-    function animate() {
-      let delta = clock.getDelta();
-      stats.update();
-      controls.update();
-      renderer.render(scene, camera);
-      requestAnimationFrame(animate);
-    }
     // 初始化物理世界
     let world = new CANNON.World();
     world.gravity.set(0, -9.82, 0)
-
+    const cannonDebugger = new CannonDebugger(scene, world, {})
     // 默认弹性和摩擦系数
     world.defaultContactMaterial.contactEquationStiffness = 1e9;
     world.defaultContactMaterial.contactEquationRelaxation = 4;
@@ -86,7 +79,7 @@ onMounted (()=>{
     world.addContactMaterial(physics_physics);
 
     // 创建一个球体
-    const radius = 1.3;
+    const radius = 0.8;
     const sphereShape = new CANNON.Sphere(radius);
     const sphereBody = new CANNON.Body({
       mass: 5,
@@ -94,7 +87,8 @@ onMounted (()=>{
     })
     sphereBody.addShape(sphereShape);
     sphereBody.linearDamping = 0.9;
-
+    sphereBody.position.set(0, 5, 0)
+    world.addBody(sphereBody)
     // 创建一个球体
     const sphereGeometry = new THREE.SphereGeometry(radius, 8, 8);
     const sphereMaterial = new THREE.MeshStandardMaterial({
@@ -103,6 +97,16 @@ onMounted (()=>{
     })
     const sphereMesh = new THREE.Mesh(sphereGeometry,sphereMaterial)
     scene.add(sphereMesh)
+
+    // 创建物理地面
+    const groundShape = new CANNON.Plane();
+    const groundBody = new CANNON.Body({
+      mass: 0,
+      material: physicsMaterial,
+    });
+    groundBody.addShape(groundShape);
+    groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2)
+    world.addBody(groundBody)
     // 创建一个平面
     const planeGeometry = new THREE.PlaneGeometry(20, 20, 1, 1);
     const planMaterial = new THREE.MeshBasicMaterial({
@@ -113,6 +117,37 @@ onMounted (()=>{
     plane.receiveShadow = true;
     plane.rotation.x = -Math.PI / 2;
     scene.add(plane)
+    
+    let controls
+
+    function initPointerLock() {
+        controls = new PointerLockControlsCannon(camera, sphereBody);
+        scene.add(controls.getObject());
+
+        renderer.domElement.addEventListener("click", () => {
+            controls.lock()
+        })
+        controls.addEventListener("lock", () => {
+          controls.enabled = true
+        })
+        controls.addEventListener("unlock", () => {
+          controls.enabled = false
+        })
+    }
+    initPointerLock();
+    const clock = new THREE.Clock();
+    function animate() {
+      let delta = clock.getDelta();
+      world.step(1 / 60, delta, 10);
+      stats.update();
+      controls.update(delta);
+    
+      cannonDebugger.update()
+      sphereMesh.position.copy(sphereBody.position)
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+
 
     // // 创建胶囊几何体
     // const capsuleGeometry  = new THREE.CapsuleGeometry(0.35, 1, 32);
