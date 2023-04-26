@@ -82,7 +82,7 @@ onMounted (()=>{
     const radius = 0.8;
     const sphereShape = new CANNON.Sphere(radius);
     const sphereBody = new CANNON.Body({
-      mass: 5,
+      mass: 100,
       material: physicsMaterial,
     })
     sphereBody.addShape(sphereShape);
@@ -144,6 +144,9 @@ onMounted (()=>{
     
       cannonDebugger.update()
       sphereMesh.position.copy(sphereBody.position)
+      sphereMesh.quaternion.copy(controls.getObject().quaternion)
+      
+
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     }
