@@ -146,6 +146,7 @@ onMounted (()=>{
       sphereMesh.position.copy(sphereBody.position)
       sphereMesh.quaternion.copy(controls.getObject().quaternion)
       
+
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     }
