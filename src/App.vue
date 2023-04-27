@@ -1,8 +1,7 @@
 <script setup>
 import * as THREE from 'three'
 import  Stats  from "three/examples/jsm/libs/stats.module"
-import  { Octree }  from "three/examples/jsm/math/Octree.js"
-import { Capsule } from "three/examples/jsm/math/Capsule.js"
+
 // import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import * as CANNON from "cannon-es"
 import { onMounted, reactive } from 'vue'
