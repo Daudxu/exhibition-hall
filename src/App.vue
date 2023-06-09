@@ -136,18 +136,6 @@ onMounted (()=>{
     }
     initPointerLock();
     const clock = new THREE.Clock();
-
-    // 在按键按下和松开事件中更新键盘状态
-    const keyboardState = {};
-
-    window.addEventListener('keydown', (event) => {
-      keyboardState[event.code] = true;
-    });
-
-    window.addEventListener('keyup', (event) => {
-      keyboardState[event.code] = false;
-    });
-    const speed = 1.1;
     function animate() {
       let delta = clock.getDelta();
       world.step(1 / 60, delta, 10);
@@ -157,42 +145,10 @@ onMounted (()=>{
       cannonDebugger.update()
       sphereMesh.position.copy(sphereBody.position)
       sphereMesh.quaternion.copy(controls.getObject().quaternion)
-      
-     
-      const cameraDirection = new THREE.Vector3();
-      camera.getWorldDirection(cameraDirection); // 获取相机的朝向向量
-      const moveDirection = new THREE.Vector3(cameraDirection.x, 0, cameraDirection.z);
-      moveDirection.normalize(); // 忽略y轴的分量，只保留水平方向
-
-      const leftDirection = new THREE.Vector3(-cameraDirection.z, 0, cameraDirection.x);
-      leftDirection.normalize(); // 左方向为相机朝向的逆时针旋转90度
-
-      const rightDirection = new THREE.Vector3(cameraDirection.z, 0, -cameraDirection.x);
-      rightDirection.normalize(); // 右方向为相机朝向的顺时针旋转90度
-
-      if (keyboardState['KeyW']) {
-        // 根据相机朝向施加力或设置速度使人物向前移动
-        const velocity = moveDirection.multiplyScalar(speed);
-        sphereBody.velocity.copy(velocity);
-      } else if (keyboardState['KeyS']) {
-        // 根据相机朝向施加力或设置速度使人物向后移动
-        const velocity = moveDirection.multiplyScalar(-speed);
-        sphereBody.velocity.copy(velocity);
-      } else if (keyboardState['KeyA']) {
-        // 根据相机朝向施加力或设置速度使人物向左移动
-        const velocity = leftDirection.multiplyScalar(speed);
-        sphereBody.velocity.copy(velocity);
-      } else if (keyboardState['KeyD']) {
-        // 根据相机朝向施加力或设置速度使人物向右移动
-        const velocity = rightDirection.multiplyScalar(speed);
-        sphereBody.velocity.copy(velocity);
-      } else {
-        sphereBody.velocity.set(0, 0, 0); // 停止人物移动
-      }
+    
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     }
-
 
     // // 创建胶囊几何体
     // const capsuleGeometry  = new THREE.CapsuleGeometry(0.35, 1, 32);
